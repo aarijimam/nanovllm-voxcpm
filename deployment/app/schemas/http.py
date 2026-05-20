@@ -119,6 +119,23 @@ class EncodeLatentsResponse(BaseModel):
     channels: int
 
 
+class SpeechRequest(BaseModel):
+    """Request body for POST /v1/audio/speech (OpenAI-compatible TTS endpoint).
+
+    `voice` is accepted for API compatibility but ignored; voice is controlled by ref_audio.
+    """
+
+    input: str = Field(..., description="Text to synthesize.")
+    voice: str = Field("", description="Voice identifier (reserved; currently unused).")
+    response_format: Literal["pcm"] = Field("pcm", description="Output audio format. Only 'pcm' is supported.")
+    stream: bool = Field(True, description="Whether to stream the response.")
+    ref_audio: str | None = Field(None, description="Base64-encoded reference audio file bytes.")
+    ref_audio_format: str = Field(
+        "wav",
+        description="Container format of ref_audio (e.g. 'wav', 'flac'). Defaults to 'wav'.",
+    )
+
+
 class GenerateRequest(BaseModel):
     """Request body for POST /generate.
 
