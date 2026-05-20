@@ -61,12 +61,21 @@ async def speech(
 
     ref_audio_latents: bytes | None = None
     if req.ref_audio is not None:
+        ref_audio_str = req.ref_audio
+        ref_audio_format = req.ref_audio_format
+        # Strip data URI prefix (e.g. "data:audio/wav;base64,<data>") sent by some clients.
+        if ref_audio_str.startswith("data:") and "," in ref_audio_str:
+            header, ref_audio_str = ref_audio_str.split(",", 1)
+            # Extract format from MIME type if not explicitly overridden.
+            if req.ref_audio_format == "wav" and ";" in header:
+                mime = header.split(";")[0].replace("data:", "")
+                ref_audio_format = mime.split("/")[-1]  # e.g. "audio/mpeg" → "mpeg", "audio/wav" → "wav"
         try:
-            wav_bytes = base64.b64decode(req.ref_audio)
+            wav_bytes = base64.b64decode(ref_audio_str)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Invalid base64 in ref_audio: {e}") from e
         try:
-            ref_audio_latents = await server.encode_latents(wav_bytes, req.ref_audio_format)
+            ref_audio_latents = await server.encode_latents(wav_bytes, ref_audio_format)
         except HTTPException:
             raise
         except Exception as e:
