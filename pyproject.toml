@@ -9,7 +9,7 @@ authors = [{ name = "Guoyang Zeng" }]
 classifiers = ["License :: OSI Approved :: MIT License"]
 readme = "README.md"
 description = "VoxCPM inference engine based on Nano-vLLM"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "torch>=2.5.0,!=2.6.*",
     "triton>=3.0.0",
@@ -108,3 +108,7 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.14.14",
 ]
+
+[tool.uv.sources]
+flash-attn = { url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.9.17/flash_attn-2.8.3+cu130torch2.12-cp312-cp312-linux_x86_64.whl" }
+
